@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  bot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: futurewatch-bot
+    restart: always
+
+  scraper:
+    build:
+      context: .
+      dockerfile: cron/Dockerfile
+    container_name: futurewatch-scraper
+    restart: always
