@@ -1,16 +1,17 @@
-version: '3.8'
+version: "3.9"
 
 services:
   bot:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: futurewatch-bot
-    restart: always
+    build: .
+    command: ["python", "-m", "bot.bot"]
+    restart: unless-stopped
+    volumes:
+      - .:/app
 
   scraper:
-    build:
-      context: .
-      dockerfile: cron/Dockerfile
-    container_name: futurewatch-scraper
-    restart: always
+    build: .
+    entrypoint: ["/entrypoint.sh"]
+    restart: unless-stopped
+    volumes:
+      - .:/app
+

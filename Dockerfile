@@ -1,4 +1,4 @@
-FROM python:3.12-slim
+FROM mcr.microsoft.com/playwright/python:v1.52.0-jammy
 
 WORKDIR /app
 
@@ -7,4 +7,14 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-CMD ["python", "-m", "bot.bot"]
+# Playwright needs browsers installed
+RUN playwright install
+
+# Копіюємо cron-розклад і ентрипоїнт
+COPY cron/entrypoint.sh /entrypoint.sh
+COPY cron/crontab /etc/cron.d/futurewatch-cron
+
+RUN chmod +x /entrypoint.sh
+RUN chmod 0644 /etc/cron.d/futurewatch-cron
+RUN touch /var/log/cron.log
+
