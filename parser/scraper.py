@@ -27,6 +27,24 @@ FIRST_PAGE_RATEDLIST = "https://ua.kinorium.com/user/{kinorium_id}/ratings/?mode
 RATEDLIST_URL = "https://ua.kinorium.com/user/{kinorium_id}/ratings/?mode=movie&nav_type=movie%2Canimation&company_type=production&perpage={PER_PAGE}&order=date"
 
 
+async def safe_goto(page, url, wait_until="networkidle", timeout=60000, retries=3, delay=5):
+    for attempt in range(1, retries + 1):
+        try:
+            logging.info(f"Loading {url} (attempt {attempt})...")
+            response = await page.goto(url, wait_until=wait_until, timeout=timeout)
+            if response is None or not response.ok:
+                logging.warning(f"Unsuccessful load (attempt {attempt}) for {url}")
+            else:
+                logging.info(f"Successfully loaded {url}")
+                return response
+        except Exception as e:
+            logging.error(f"Attempt {attempt} failed for {url}: {e}")
+        if attempt < retries:
+            await asyncio.sleep(delay)
+    logging.error(f"Failed to load {url} after {retries} attempts")
+    return None
+
+
 async def get_total_pages(kinorium_id, is_rated: bool = False):
     """Get the number of pages from the first page for a specific user"""
     url = FIRST_PAGE_RATEDLIST if is_rated else FIRST_PAGE_WATCHLIST
@@ -72,7 +90,7 @@ async def get_total_movies(kinorium_id, is_rated: bool = False):
 
 async def load_page(page, url):
     """Load a page and perform smooth scrolling"""
-    await page.goto(url, wait_until="networkidle")
+    await safe_goto(page, url, wait_until="networkidle")
     await page.evaluate(
         """
         () => {

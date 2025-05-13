@@ -1,1 +1,2 @@
-0 3 * * * /usr/local/bin/python /app/parser/scraper.py >> /var/log/cron.log 2>&1
+0 1 * * * /usr/local/bin/python /app/parser/scraper.py >> /var/log/cron.log 2>&1
+

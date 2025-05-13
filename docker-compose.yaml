@@ -7,6 +7,7 @@ services:
     restart: unless-stopped
     volumes:
       - .:/app
+      - /etc/localtime:/etc/localtime:ro
 
   scraper:
     build: .
@@ -14,4 +15,5 @@ services:
     restart: unless-stopped
     volumes:
       - .:/app
+      - /etc/localtime:/etc/localtime:ro
 
